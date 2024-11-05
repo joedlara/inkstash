@@ -33,3 +33,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# .gitignore
+.env
+src/config/firebaseConfig.ts
+src/api/comicVineService.ts
+src/components/GoogleButton.tsx
