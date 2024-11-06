@@ -57,22 +57,22 @@ const App = () => {
             <Stack.Screen
               name="NewReleases"
               component={NewReleasesScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
               name="MyComics"
               component={MyComicsScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
               name="ChatRoom"
               component={ChatRoomScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
               name="Search"
               component={SearchScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, animationEnabled: false }}
             />
           </>
         ) : (
@@ -96,7 +96,8 @@ const App = () => {
           </>
         )}
       </Stack.Navigator>
-      <BottomNav />
+
+      {user ? <BottomNav /> : <></>}
     </NavigationContainer>
   )
 }
