@@ -1,5 +1,5 @@
-import React from "react"
-import { View, TouchableOpacity, StyleSheet } from "react-native"
+import React, { useState } from "react"
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
@@ -16,45 +16,92 @@ type RootStackParamList = {
 const BottomNav = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const [activeTab, setActiveTab] = useState("Dashboard")
+
+  const handleTabPress = (tabName: string) => {
+    setActiveTab(tabName)
+    navigation.navigate(tabName)
+  }
 
   return (
     <View style={styles.bottomNav}>
       {/* Home Tab */}
-      <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}>
-        <Ionicons name="home" size={28} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("Dashboard")}
+      >
+        <Ionicons
+          name="home"
+          size={30}
+          color={activeTab === "Dashboard" ? "#6495ED" : "#FFFFFF"}
+        />
       </TouchableOpacity>
 
       {/* New Releases Tab */}
-      <TouchableOpacity onPress={() => navigation.navigate("NewReleases")}>
-        <Ionicons name="calendar" size={28} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("NewReleases")}
+      >
+        <Ionicons
+          name="calendar"
+          size={30}
+          color={activeTab === "NewReleases" ? "#6495ED" : "#FFFFFF"}
+        />
       </TouchableOpacity>
 
       {/* My Comics Tab */}
-      <TouchableOpacity onPress={() => navigation.navigate("MyComics")}>
-        <Ionicons name="file-tray-full" size={28} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("MyComics")}
+      >
+        <Ionicons
+          name="file-tray-full"
+          size={30}
+          color={activeTab === "MyComics" ? "#6495ED" : "#FFFFFF"}
+        />
       </TouchableOpacity>
 
       {/* Chat Room Tab */}
-      <TouchableOpacity onPress={() => navigation.navigate("ChatRoom")}>
-        <Ionicons name="chatbox-ellipses" size={28} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("ChatRoom")}
+      >
+        <Ionicons
+          name="chatbox-ellipses"
+          size={30}
+          color={activeTab === "ChatRoom" ? "#6495ED" : "#FFFFFF"}
+        />
       </TouchableOpacity>
 
       {/* Search Tab */}
-      <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-        <Ionicons name="search" size={28} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("Search")}
+      >
+        <Ionicons
+          name="search"
+          size={30}
+          color={activeTab === "Search" ? "#6495ED" : "#FFFFFF"}
+        />
       </TouchableOpacity>
     </View>
   )
 }
+
 const styles = StyleSheet.create({
   bottomNav: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 15,
-    borderTopWidth: 1,
-    paddingBottom: 30, // Adjust this value based on desired spacing
-    borderTopColor: "#AAAAAA",
-    backgroundColor: "rgba(12, 19, 34, .98)",
+    backgroundColor: "#191919",
+  },
+  tabContainer: {
+    alignItems: "center",
+
+    paddingBottom: 25,
+  },
+  tabText: {
+    color: "white",
   },
 })
 
