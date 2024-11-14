@@ -8,6 +8,7 @@ import {
   ScrollView,
   Modal,
   Animated,
+  StatusBar,
 } from "react-native"
 import { useRoute } from "@react-navigation/native"
 
@@ -27,20 +28,27 @@ const IssueDetailsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
   const [activeTab, setActiveTab] = useState("Overview")
-  const { issueID, volumeID } = route.params
+  const { issueID } = route.params
 
   const scrollY = useRef(new Animated.Value(0)).current
 
   // Interpolations for fading out and translating the hero section
-  const translateY = scrollY.interpolate({
+  const heroTranslateY = scrollY.interpolate({
     inputRange: [0, 200],
-    outputRange: [0, -200], // Move up as you scroll
+    outputRange: [0, -100],
     extrapolate: "clamp",
   })
 
-  const opacity = scrollY.interpolate({
+  const heroOpacity = scrollY.interpolate({
     inputRange: [0, 150],
-    outputRange: [1, 0], // Fade out as you scroll
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  })
+
+  // Interpolations for showing the sticky header with title and buttons
+  const stickyHeaderOpacity = scrollY.interpolate({
+    inputRange: [120, 160],
+    outputRange: [0, 1],
     extrapolate: "clamp",
   })
 
@@ -48,9 +56,7 @@ const IssueDetailsScreen = ({ navigation }) => {
     const getIssueDetails = async () => {
       try {
         const issueData = await fetchIssueDetails(issueID)
-        // const volumeData = await fetchIssueVolumes(volumeID)
         setIssue(issueData)
-        // setVolume(volumeData)
       } catch (error) {
         console.error("Error fetching issue details:", error)
       } finally {
@@ -70,28 +76,13 @@ const IssueDetailsScreen = ({ navigation }) => {
           </View>
         ) : (
           <>
-            <Animated.View
-              style={
-                (styles.heroImageContainer,
-                { transform: [{ translateY }], opacity })
-              }
-            >
-              <Image
-                source={{ uri: issue.image?.original_url }} // Replace with dynamic image URL
-                style={styles.heroImage}
-              />
-              <LinearGradient
-                colors={["rgb(0, 0, 0)", "transparent"]}
-                style={styles.topFade}
-              />
-
+            <View style={styles.topBar}>
               <TouchableOpacity
                 style={styles.backIcon}
                 onPress={() => navigation.goBack()}
               >
                 <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.addIcon}>
                 <Ionicons name="add-circle-outline" size={28} color="#FFFFFF" />
               </TouchableOpacity>
@@ -99,17 +90,7 @@ const IssueDetailsScreen = ({ navigation }) => {
               <TouchableOpacity style={styles.volumesIcon}>
                 <Ionicons name="albums-outline" size={28} color="#FFFFFF" />
               </TouchableOpacity>
-
-              <View style={styles.detailsContainer}>
-                <Text style={styles.title}>
-                  {issue.volume?.name} #{issue.issue_number}
-                </Text>
-                <Text style={styles.subtitle}>
-                  Publisher • {moment(issue.store_date).format("MMM DD, YYYY")}
-                </Text>
-              </View>
-            </Animated.View>
-
+            </View>
             <Animated.ScrollView
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
@@ -119,6 +100,35 @@ const IssueDetailsScreen = ({ navigation }) => {
               )}
               scrollEventThrottle={16}
             >
+              {/* Section 1: Hero Image/Details Container */}
+              <Animated.View
+                style={[
+                  styles.heroContainer,
+                  {
+                    opacity: heroOpacity,
+                    transform: [{ translateY: heroTranslateY }],
+                  },
+                ]}
+              >
+                <Image
+                  source={{ uri: issue.image?.original_url }}
+                  style={styles.heroImage}
+                />
+                <LinearGradient
+                  colors={["rgb(0, 0, 0)", "transparent"]}
+                  style={styles.topFade}
+                />
+                <View style={styles.detailsContainer}>
+                  <Text style={styles.title}>
+                    {issue.volume?.name} #{issue.issue_number}
+                  </Text>
+
+                  <Text style={styles.subtitle}>
+                    On Sale • {moment(issue.store_date).format("MMM DD, YYYY")}
+                  </Text>
+                </View>
+              </Animated.View>
+
               {/* Section 3: Tabs */}
               <View style={styles.tabsContainer}>
                 {["Overview", "My Details", "Reviews", "Discuss"].map((tab) => (
@@ -153,7 +163,6 @@ const IssueDetailsScreen = ({ navigation }) => {
                   <Text style={styles.description}>
                     <ReadMoreText text={issue.description} limit={20} />
                   </Text>
-
                   {/* Smaller Cover Image */}
                   <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <Image
@@ -180,22 +189,60 @@ const IssueDetailsScreen = ({ navigation }) => {
                   />
                 </TouchableOpacity>
               </Modal>
-              <Text style={styles.paragraph}>
-                This is a ScrollView example paragraph.
-              </Text>
-              <Text style={styles.paragraph}>
-                This is a ScrollView example paragraph.
-              </Text>
-              <Text style={styles.paragraph}>
-                This is a ScrollView example paragraph.
-              </Text>
-              <Text style={styles.paragraph}>
-                This is a ScrollView example paragraph.
-              </Text>
-              <Text style={styles.paragraph}>
-                This is a ScrollView example paragraph.
-              </Text>
             </Animated.ScrollView>
+
+            {/* Section 2: Icon row */}
+            <Animated.View
+              style={[styles.stickyHeader, { opacity: stickyHeaderOpacity }]}
+            >
+              <View style={styles.iconRow}>
+                <TouchableOpacity
+                  style={styles.icon}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+                </TouchableOpacity>
+                <Text
+                  style={styles.stickyTitle}
+                  numberOfLines={1} // Truncate the title to one line with ellipsis
+                  ellipsizeMode="tail"
+                >
+                  {issue.volume?.name} #{issue.issue_number}
+                </Text>
+
+                <TouchableOpacity style={styles.icon}>
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={28}
+                    color="#FFFFFF"
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.icon}>
+                  <Ionicons name="albums-outline" size={28} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.tabsContainer}>
+                {["Overview", "My Details", "Reviews", "Discuss"].map((tab) => (
+                  <TouchableOpacity
+                    key={tab}
+                    style={styles.tabItem}
+                    onPress={() => setActiveTab(tab)}
+                  >
+                    <Text
+                      style={[
+                        styles.tabText,
+                        activeTab === tab && styles.activeTabText,
+                      ]}
+                    >
+                      {tab}
+                    </Text>
+                    {activeTab === tab && <View style={styles.underline} />}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Animated.View>
           </>
         )}
       </>
@@ -204,25 +251,14 @@ const IssueDetailsScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-  },
   container: {
     flex: 1,
     backgroundColor: "#000000", // Background color for dark theme
   },
-  heroImageContainer: {
-    position: "absolute",
-    width: "100%",
-    zIndex: 1,
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    backgroundColor: "#1E3A8A",
+  heroContainer: {
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center",
   },
   heroImage: {
     width: "100%",
@@ -233,22 +269,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     width: "100%",
-    height: "60%",
-  },
-  backIcon: {
-    position: "absolute",
-    top: 60, // Adjust for padding if needed
-    left: 20,
-  },
-  addIcon: {
-    position: "absolute",
-    top: 60,
-    right: 60,
-  },
-  volumesIcon: {
-    position: "absolute",
-    top: 60,
-    right: 20,
+    height: "40%",
   },
   detailsContainer: {
     position: "absolute",
@@ -268,11 +289,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
   },
-  // tabsContainer: {
-  //   flexDirection: "row",
-  //   justifyContent: "space-around",
-  //   marginVertical: 15,
-  // },
   tabsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -299,9 +315,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E3A8A",
     width: "100%",
     marginTop: 5,
-  },
-  descriptionContainer: {
-    // flex: 1,
   },
   descriptionRow: {
     flexDirection: "row",
@@ -342,7 +355,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    // backgroundColor: "rgba(0, 0, 0, 0.9)",
     backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
@@ -354,6 +366,59 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 50,
+  },
+  stickyHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 60,
+    paddingHorizontal: 15,
+    backgroundColor: "#191919",
+    zIndex: 10,
+    elevation: 10, // For Android
+  },
+  iconRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  icon: {
+    padding: 5,
+  },
+  stickyTitle: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+  },
+  topBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 50,
+    paddingHorizontal: 20,
+    zIndex: 10,
+  },
+  backIcon: {
+    position: "absolute",
+    top: 60,
+    left: 20,
+  },
+  addIcon: {
+    position: "absolute",
+    top: 60,
+    right: 60,
+  },
+  volumesIcon: {
+    position: "absolute",
+    top: 60,
+    right: 20,
   },
 })
 
