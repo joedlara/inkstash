@@ -25,7 +25,6 @@ const TopBarNav: React.FC<TopTabsBarProps> = ({ onTabPress, activeTab }) => {
               source={require("../assets/icon.png")}
               style={styles.userIcon}
             />
-            <Text style={styles.username}>Dynamixjl</Text>
           </View>
           <View style={styles.iconSection}>
             <TouchableOpacity style={styles.icon}>
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userSection: { flexDirection: "row", alignItems: "center" },
-  userIcon: { width: 40, height: 40, borderRadius: 15, marginRight: 5 },
+  userIcon: { width: 50, height: 50, borderRadius: 15, marginRight: 5 },
   username: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold" },
   iconSection: { flexDirection: "row" },
   icon: { marginLeft: 15 },
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#0c1322c5", // Background color for the tab section
+    backgroundColor: "#191919ce", // Background color for the tab section
     paddingVertical: 10,
     borderRadius: 10, // Rounded corners
     marginTop: 10,

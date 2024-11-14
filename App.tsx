@@ -14,6 +14,7 @@ import MyComicsScreen from "./src/screens/MyComicsScreen"
 import SearchScreen from "./src/screens/SearchScreen"
 import ChatRoomScreen from "./src/screens/ChatRoomScreen"
 import NewReleasesScreen from "./src/screens/NewReleasesScreen"
+import IssueDetailsScreen from "./src/screens/IssueDetailsScreen"
 import BottomNav from "./src/components/BottomNav"
 
 const Stack = createStackNavigator()
@@ -35,7 +36,6 @@ const App = () => {
   }, [initializing])
 
   if (initializing) {
-    // Display a loading indicator while checking auth status
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -74,6 +74,11 @@ const App = () => {
               component={SearchScreen}
               options={{ headerShown: false, animationEnabled: false }}
             />
+            <Stack.Screen
+              name="IssueDetails"
+              component={IssueDetailsScreen}
+              options={{ headerShown: false }}
+            />
           </>
         ) : (
           // Otherwise, show the login and registration screens
@@ -97,7 +102,13 @@ const App = () => {
         )}
       </Stack.Navigator>
 
-      {user ? <BottomNav /> : <></>}
+      {user ? (
+        <>
+          <BottomNav />
+        </>
+      ) : (
+        <></>
+      )}
     </NavigationContainer>
   )
 }

@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native"
 import React from "react"
+import BottomNav from "../components/BottomNav"
 
 const NewReleasesScreen = () => {
   return (
