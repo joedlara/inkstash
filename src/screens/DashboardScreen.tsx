@@ -14,12 +14,18 @@ import { fetchComicIssues } from "../api/comicVineService"
 import { useNavigation } from "@react-navigation/native"
 import TopBarNav from "../components/TopBarNav"
 import { StatusBar } from "expo-status-bar"
+import { isIssueLiked, toggleLikeItem } from "../api/databaseService"
+import { fetchMangaList } from "../api/mangaHookService"
 
-const DashboardScreen = () => {
+const DashboardScreen = ({ userId }) => {
   const [comics, setComics] = useState([])
   const [featuredComic, setFeaturedComic] = useState(null)
+  const [mangaList, setMangaList] = useState([])
   const [loading, setLoading] = useState(true)
+  const [liked, setLiked] = useState(false)
+
   const [activeTab, setActiveTab] = useState("For You")
+
   const navigation = useNavigation()
 
   const handleTabPress = (tabName: string) => {
@@ -29,29 +35,53 @@ const DashboardScreen = () => {
     navigation.navigate("IssueDetails", { issueID, volumeID })
   }
 
+  const handleLike = async (
+    issueID: string,
+    name: any,
+    issue_number: any,
+    img_url: any
+  ) => {
+    if (userId && featuredComic) {
+      try {
+        await toggleLikeItem(
+          userId,
+          {
+            id: issueID,
+            name: `${name} #${issue_number}`,
+            type: "Comic",
+            imageUrl: img_url,
+          },
+          liked
+        )
+        setLiked(!liked)
+      } catch (error) {
+        console.error("Error handleLike:", error)
+      }
+    } else {
+      console.error("Missing userId or issueID")
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const data = await fetchComicIssues()
-        setComics(data)
-        if (data.length > 0) setFeaturedComic(data[0])
-      } catch (error) {
-        console.error("Error fetching data:", error)
-      } finally {
-        setLoading(false)
+      const comicData = await fetchComicIssues()
+      const mangeData = await fetchMangaList()
+      setComics(comicData)
+      setMangaList(mangeData)
+      if (comicData.length > 0) setFeaturedComic(comicData[0])
+      if (userId && featuredComic?.id) {
+        const likedStatus = await isIssueLiked(userId, featuredComic.id)
+        setLiked(likedStatus)
       }
+      setLoading(false)
     }
-
     fetchData()
   }, [])
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView>
         <TopBarNav onTabPress={handleTabPress} activeTab={activeTab} />
         {/* Featured Image with Fading Effect */}
 
@@ -87,8 +117,21 @@ const DashboardScreen = () => {
                     A favorite among our community
                   </Text>
                   <View style={styles.actionButtons}>
-                    <TouchableOpacity style={styles.pullButton}>
-                      <Text style={styles.pullButtonText}>PULL SERIES</Text>
+                    <TouchableOpacity
+                      key={featuredComic?.id}
+                      style={styles.pullButton}
+                      onPress={() =>
+                        handleLike(
+                          featuredComic.id,
+                          featuredComic.volume?.name,
+                          featuredComic.issue_number,
+                          featuredComic.image?.original_url
+                        )
+                      }
+                    >
+                      <Text style={styles.pullButtonText}>
+                        {liked ? "UNPULL" : "PULL SERIES"}
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.closeButton}>
                       <Ionicons name="close" size={20} color="#FFFFFF" />

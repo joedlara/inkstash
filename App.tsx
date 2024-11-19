@@ -10,7 +10,7 @@ import HomeScreen from "./src/screens/HomeScreen"
 import LoginScreen from "./src/screens/LoginScreen"
 import RegisterScreen from "./src/screens/RegisterScreen"
 import DashboardScreen from "./src/screens/DashboardScreen"
-import MyComicsScreen from "./src/screens/MyComicsScreen"
+import MyCollectionsScreen from "./src/screens/MyCollectionsScreen"
 import SearchScreen from "./src/screens/SearchScreen"
 import ChatRoomScreen from "./src/screens/ChatRoomScreen"
 import NewReleasesScreen from "./src/screens/NewReleasesScreen"
@@ -49,11 +49,9 @@ const App = () => {
         {user ? (
           // If user is logged in, go directly to the Dashboard
           <>
-            <Stack.Screen
-              name="Dashboard"
-              component={DashboardScreen}
-              options={{ headerShown: false }}
-            />
+            <Stack.Screen name="Dashboard" options={{ headerShown: false }}>
+              {() => <DashboardScreen userId={user.uid} />}
+            </Stack.Screen>
             <Stack.Screen
               name="NewReleases"
               component={NewReleasesScreen}
@@ -61,9 +59,10 @@ const App = () => {
             />
             <Stack.Screen
               name="MyComics"
-              component={MyComicsScreen}
               options={{ headerShown: false, animationEnabled: false }}
-            />
+            >
+              {() => <MyCollectionsScreen userId={user.uid} />}
+            </Stack.Screen>
             <Stack.Screen
               name="ChatRoom"
               component={ChatRoomScreen}

@@ -161,7 +161,7 @@ const IssueDetailsScreen = ({ navigation }) => {
                 <View style={styles.descriptionRow}>
                   {/* Description Text */}
                   <Text style={styles.description}>
-                    <ReadMoreText text={issue.description} limit={20} />
+                    <ReadMoreText text={issue?.description} limit={20} />
                   </Text>
                   {/* Smaller Cover Image */}
                   <TouchableOpacity onPress={() => setModalVisible(true)}>

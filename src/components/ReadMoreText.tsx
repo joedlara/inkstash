@@ -25,7 +25,9 @@ const ReadMoreText: React.FC<ReadMoreProps> = ({ text, limit = 30 }) => {
   }
 
   // Clean the text before processing
-  const cleanedText = cleanText(text)
+  const cleanedText = text
+    ? text.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&")
+    : ""
 
   // Split the cleaned text into words and check if it exceeds the limit
   const words = cleanedText.split(" ")
