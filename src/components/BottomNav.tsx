@@ -8,8 +8,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 type RootStackParamList = {
   Dashboard: undefined
   NewReleases: undefined
-  MyComics: undefined
-  ChatRoom: undefined
+  MyCollection: undefined
+  Live: undefined
   Search: undefined
 }
 
@@ -49,27 +49,27 @@ const BottomNav = () => {
         />
       </TouchableOpacity>
 
-      {/* My Comics Tab */}
+      {/* Chat Room Tab */}
       <TouchableOpacity
         style={styles.tabContainer}
-        onPress={() => handleTabPress("MyComics")}
+        onPress={() => handleTabPress("Live")}
+      >
+        <Ionicons
+          name="aperture"
+          size={35}
+          color={activeTab === "Live" ? "#e54141" : "#FFFFFF"}
+        />
+      </TouchableOpacity>
+
+      {/* My Collections Tab */}
+      <TouchableOpacity
+        style={styles.tabContainer}
+        onPress={() => handleTabPress("MyCollection")}
       >
         <Ionicons
           name="file-tray-full"
           size={30}
-          color={activeTab === "MyComics" ? "#6495ED" : "#FFFFFF"}
-        />
-      </TouchableOpacity>
-
-      {/* Chat Room Tab */}
-      <TouchableOpacity
-        style={styles.tabContainer}
-        onPress={() => handleTabPress("ChatRoom")}
-      >
-        <Ionicons
-          name="chatbox-ellipses"
-          size={30}
-          color={activeTab === "ChatRoom" ? "#6495ED" : "#FFFFFF"}
+          color={activeTab === "MyCollection" ? "#6495ED" : "#FFFFFF"}
         />
       </TouchableOpacity>
 

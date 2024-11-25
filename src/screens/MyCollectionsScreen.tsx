@@ -8,7 +8,10 @@ import {
   StyleSheet,
   StatusBar,
 } from "react-native"
-import { fetchUserCollection } from "../api/databaseService"
+import {
+  fetchUserCollection,
+  getUserCollectibles,
+} from "../api/databaseService"
 import { useNavigation } from "@react-navigation/native"
 
 const MyCollectionsScreen = ({ userId }) => {
@@ -16,6 +19,9 @@ const MyCollectionsScreen = ({ userId }) => {
   const [itemsCount, setItemsCount] = useState(0)
   const [readCount, setReadCount] = useState(0)
   const [wantedCount, setWantedCount] = useState(0)
+  const [tab, setTab] = useState("liked") // "liked" or "myListings"
+  const [likedItems, setLikedItems] = useState([])
+  const [myListings, setMyListings] = useState([])
   const navigation = useNavigation()
 
   useEffect(() => {
@@ -24,12 +30,20 @@ const MyCollectionsScreen = ({ userId }) => {
       setCollection(data)
       setItemsCount(itemsCount)
     }
+    if (tab === "myListings") {
+      getUserCollectibles()
+        .then(setMyListings)
+        .catch((error) => console.error(error))
+    }
 
     fetchData()
-  }, [userId])
+  }, [])
 
   const handleItemPress = (item: string) => {
-    navigation.navigate("IssueDetails", { issueID: item.itemId })
+    navigation.navigate("CollectionDetails", {
+      userId,
+      itemId: item.itemId,
+    })
   }
 
   const renderItem = ({ item }) => (
@@ -57,15 +71,15 @@ const MyCollectionsScreen = ({ userId }) => {
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{itemsCount}</Text>
-            <Text style={styles.statLabel}>ITEMS</Text>
+            <Text style={styles.statLabel}>LIKED</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{readCount}</Text>
-            <Text style={styles.statLabel}>READ</Text>
+            <Text style={styles.statLabel}>BOUGHT</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{wantedCount}</Text>
-            <Text style={styles.statLabel}>WANTED</Text>
+            <Text style={styles.statLabel}>ON SALE</Text>
           </View>
         </View>
       </View>
