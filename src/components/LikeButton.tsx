@@ -1,12 +1,12 @@
 import { View, Text } from "react-native"
 import React from "react"
 
-const SearchScreen = () => {
+const LikeButton = () => {
   return (
     <View>
-      <Text>SearchScreen</Text>
+      <Text>LikeButton</Text>
     </View>
   )
 }
 
-export default SearchScreen
+export default LikeButton

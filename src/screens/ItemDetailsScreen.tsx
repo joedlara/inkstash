@@ -5,30 +5,24 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Modal,
   Animated,
-  StatusBar,
 } from "react-native"
 import { useRoute } from "@react-navigation/native"
-
-import { fetchIssueDetails, fetchIssueVolumes } from "../api/comicVineService"
 import { Ionicons } from "@expo/vector-icons"
-import { useNavigation } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-
 import { LinearGradient } from "expo-linear-gradient"
 import moment from "moment"
 import ReadMoreText from "../components/ReadMoreText"
+import { fetchItemDetails } from "../api/databaseService"
+import BackButtonTop from "../components/BackButtonTop"
 
-const IssueDetailsScreen = ({ navigation }) => {
+const ItemDetailsScreen = () => {
   const route = useRoute()
-  const [issue, setIssue] = useState([])
-  const [volume, setVolume] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
   const [activeTab, setActiveTab] = useState("Overview")
-  const { issueID } = route.params
+  const [itemData, setItemData] = useState([])
+  const { itemId } = route.params
 
   const scrollY = useRef(new Animated.Value(0)).current
 
@@ -53,19 +47,19 @@ const IssueDetailsScreen = ({ navigation }) => {
   })
 
   useEffect(() => {
-    const getIssueDetails = async () => {
+    const getItemDetails = async () => {
       try {
-        const issueData = await fetchIssueDetails(issueID)
-        setIssue(issueData)
+        const data = await fetchItemDetails(itemId)
+        setItemData(data)
       } catch (error) {
-        console.error("Error fetching issue details:", error)
+        console.error("Error loading item data:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    getIssueDetails()
-  }, [issueID])
+    getItemDetails()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -76,21 +70,7 @@ const IssueDetailsScreen = ({ navigation }) => {
           </View>
         ) : (
           <>
-            <View style={styles.topBar}>
-              <TouchableOpacity
-                style={styles.backIcon}
-                onPress={() => navigation.goBack()}
-              >
-                <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.addIcon}>
-                <Ionicons name="add-circle-outline" size={28} color="#FFFFFF" />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.volumesIcon}>
-                <Ionicons name="albums-outline" size={28} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
+            <BackButtonTop />
             <Animated.ScrollView
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
@@ -111,7 +91,7 @@ const IssueDetailsScreen = ({ navigation }) => {
                 ]}
               >
                 <Image
-                  source={{ uri: issue.image?.original_url }}
+                  source={{ uri: itemData?.image }}
                   style={styles.heroImage}
                 />
                 <LinearGradient
@@ -119,12 +99,12 @@ const IssueDetailsScreen = ({ navigation }) => {
                   style={styles.topFade}
                 />
                 <View style={styles.detailsContainer}>
-                  <Text style={styles.title}>
-                    {issue.volume?.name} #{issue.issue_number}
-                  </Text>
+                  <Text style={styles.title}>{itemData?.title}</Text>
 
                   <Text style={styles.subtitle}>
-                    On Sale • {moment(issue.store_date).format("MMM DD, YYYY")}
+                    On Sale •{" $"}
+                    {/* {moment(itemData?.timestamp).format("MMM DD, YYYY")} */}
+                    {itemData.price}
                   </Text>
                 </View>
               </Animated.View>
@@ -161,12 +141,12 @@ const IssueDetailsScreen = ({ navigation }) => {
                 <View style={styles.descriptionRow}>
                   {/* Description Text */}
                   <Text style={styles.description}>
-                    <ReadMoreText text={issue?.description} limit={20} />
+                    <ReadMoreText text={itemData?.description} limit={20} />
                   </Text>
                   {/* Smaller Cover Image */}
                   <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <Image
-                      source={{ uri: issue.image?.original_url }}
+                      source={{ uri: itemData?.image }}
                       style={styles.smallCover}
                     />
                   </TouchableOpacity>
@@ -184,7 +164,7 @@ const IssueDetailsScreen = ({ navigation }) => {
                   onPress={() => setModalVisible(false)}
                 >
                   <Image
-                    source={{ uri: issue.image?.original_url }}
+                    source={{ uri: itemData?.image }}
                     style={styles.fullCover}
                   />
                 </TouchableOpacity>
@@ -196,31 +176,13 @@ const IssueDetailsScreen = ({ navigation }) => {
               style={[styles.stickyHeader, { opacity: stickyHeaderOpacity }]}
             >
               <View style={styles.iconRow}>
-                <TouchableOpacity
-                  style={styles.icon}
-                  onPress={() => navigation.goBack()}
-                >
-                  <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
-                </TouchableOpacity>
                 <Text
                   style={styles.stickyTitle}
                   numberOfLines={1} // Truncate the title to one line with ellipsis
                   ellipsizeMode="tail"
                 >
-                  {issue.volume?.name} #{issue.issue_number}
+                  {itemData?.title}
                 </Text>
-
-                <TouchableOpacity style={styles.icon}>
-                  <Ionicons
-                    name="add-circle-outline"
-                    size={28}
-                    color="#FFFFFF"
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.icon}>
-                  <Ionicons name="albums-outline" size={28} color="#FFFFFF" />
-                </TouchableOpacity>
               </View>
 
               <View style={styles.tabsContainer}>
@@ -422,4 +384,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default IssueDetailsScreen
+export default ItemDetailsScreen

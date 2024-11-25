@@ -8,6 +8,7 @@ import {
 } from "react-native"
 import React from "react"
 import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 
 type TopTabsBarProps = {
   onTabPress: (tabName: string) => void
@@ -15,6 +16,7 @@ type TopTabsBarProps = {
 }
 
 const TopBarNav: React.FC<TopTabsBarProps> = ({ onTabPress, activeTab }) => {
+  const navigation = useNavigation()
   return (
     <View style={styles.container}>
       {/* Top Bar */}
@@ -27,11 +29,17 @@ const TopBarNav: React.FC<TopTabsBarProps> = ({ onTabPress, activeTab }) => {
             />
           </View>
           <View style={styles.iconSection}>
-            <TouchableOpacity style={styles.icon}>
-              <Ionicons name="settings-sharp" size={28} color="#FFFFFF" />
+            <TouchableOpacity
+              style={styles.icon}
+              onPress={() => navigation.navigate("SellItem")}
+            >
+              <Ionicons name="add-circle" size={35} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.icon}>
-              <Ionicons name="person-circle" size={28} color="#FFFFFF" />
+            <TouchableOpacity
+              style={styles.icon}
+              onPress={() => navigation.navigate("UserSettings")}
+            >
+              <Ionicons name="person-circle" size={35} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>

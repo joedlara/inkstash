@@ -10,140 +10,95 @@ import {
 } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
-import { fetchComicIssues } from "../api/comicVineService"
 import { useNavigation } from "@react-navigation/native"
 import TopBarNav from "../components/TopBarNav"
 import { StatusBar } from "expo-status-bar"
-import { isIssueLiked, toggleLikeItem } from "../api/databaseService"
-import { fetchMangaList } from "../api/mangaHookService"
 
-const DashboardScreen = ({ userId }) => {
-  const [comics, setComics] = useState([])
-  const [featuredComic, setFeaturedComic] = useState(null)
-  const [mangaList, setMangaList] = useState([])
+const DashboardScreen = () => {
   const [loading, setLoading] = useState(true)
-  const [liked, setLiked] = useState(false)
-
   const [activeTab, setActiveTab] = useState("For You")
-
   const navigation = useNavigation()
+
+  const mockData = {
+    type: "collectible",
+    title: "Rare Spider-Man Comic",
+    subtitle: "Signed by Stan Lee",
+    image:
+      "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9535719-cover2.jpg",
+    price: 1200,
+    verified: true,
+    featured: true,
+  }
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName)
   }
-  const handleIssuePress = (issueID: string, volumeID: string) => {
-    navigation.navigate("IssueDetails", { issueID, volumeID })
-  }
 
-  const handleLike = async (
-    issueID: string,
-    name: any,
-    issue_number: any,
-    img_url: any
-  ) => {
-    if (userId && featuredComic) {
-      try {
-        await toggleLikeItem(
-          userId,
-          {
-            id: issueID,
-            name: `${name} #${issue_number}`,
-            type: "Comic",
-            imageUrl: img_url,
-          },
-          liked
-        )
-        setLiked(!liked)
-      } catch (error) {
-        console.error("Error handleLike:", error)
-      }
-    } else {
-      console.error("Missing userId or issueID")
+  const handlePress = () => {
+    if (mockData.type === "collectible") {
+      navigation.navigate("ItemDetails", { itemId: mockData.id })
+    } else if (mockData.type === "event") {
+      navigation.navigate("EventDetailsScreen", { eventId: mockData.id })
     }
   }
 
   useEffect(() => {
     const fetchData = async () => {
-      const comicData = await fetchComicIssues()
-      const mangeData = await fetchMangaList()
-      setComics(comicData)
-      setMangaList(mangeData)
-      if (comicData.length > 0) setFeaturedComic(comicData[0])
-      if (userId && featuredComic?.id) {
-        const likedStatus = await isIssueLiked(userId, featuredComic.id)
-        setLiked(likedStatus)
-      }
       setLoading(false)
     }
+
     fetchData()
   }, [])
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <TopBarNav onTabPress={handleTabPress} activeTab={activeTab} />
-        {/* Featured Image with Fading Effect */}
+        {loading ? (
+          <View style={styles.featuredImageContainer}>
+            <ActivityIndicator style={styles.loadingCircle} color="cyan" />
+          </View>
+        ) : (
+          <View style={styles.featuredImageContainer}>
+            <Image
+              source={{ uri: mockData.image }}
+              style={styles.featuredImage}
+            />
+            <LinearGradient
+              colors={["rgb(0, 0, 0)", "transparent"]}
+              style={styles.topFade}
+            />
 
-        {featuredComic && (
-          <>
-            {loading ? (
-              <View style={styles.featuredImageContainer}>
-                <ActivityIndicator style={styles.loadingCircle} color="cyan" />
+            <LinearGradient
+              colors={["transparent", "rgb(0, 0, 0)"]}
+              style={styles.bottomFade}
+            />
+
+            {/* Suggested Comic Overlay */}
+            <View style={styles.suggestedItemOverlay}>
+              <Text style={styles.suggestionLabel}>SUGGESTION</Text>
+              <Text style={styles.suggestedTitle}>{mockData.title}</Text>
+              <Text style={styles.suggestedSubtitle}>{mockData.subtitle}</Text>
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={styles.detailsButton}
+                  onPress={handlePress}
+                >
+                  <Text style={styles.detailsButtonText}>View Details</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.closeButton}>
+                  <Ionicons name="close" size={20} color="#FFFFFF" />
+                </TouchableOpacity>
               </View>
-            ) : (
-              <View style={styles.featuredImageContainer}>
-                <Image
-                  source={{ uri: featuredComic.image?.original_url }}
-                  style={styles.featuredImage}
-                />
-                <LinearGradient
-                  colors={["rgb(0, 0, 0)", "transparent"]}
-                  style={styles.topFade}
-                />
-
-                <LinearGradient
-                  colors={["transparent", "rgb(0, 0, 0)"]}
-                  style={styles.bottomFade}
-                />
-
-                {/* Suggested Comic Overlay */}
-                <View style={styles.suggestedComicOverlay}>
-                  <Text style={styles.suggestionLabel}>SUGGESTION</Text>
-                  <Text style={styles.suggestedTitle}>
-                    {featuredComic.volume?.name} #{featuredComic.issue_number}
-                  </Text>
-                  <Text style={styles.suggestedSubtitle}>
-                    A favorite among our community
-                  </Text>
-                  <View style={styles.actionButtons}>
-                    <TouchableOpacity
-                      key={featuredComic?.id}
-                      style={styles.pullButton}
-                      onPress={() =>
-                        handleLike(
-                          featuredComic.id,
-                          featuredComic.volume?.name,
-                          featuredComic.issue_number,
-                          featuredComic.image?.original_url
-                        )
-                      }
-                    >
-                      <Text style={styles.pullButtonText}>
-                        {liked ? "UNPULL" : "PULL SERIES"}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.closeButton}>
-                      <Ionicons name="close" size={20} color="#FFFFFF" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            )}
-          </>
+            </View>
+          </View>
         )}
         {/* Top Pick  */}
-        <View style={styles.whatsNewSection}>
+        {/* <View style={styles.whatsNewSection}>
           <Text style={styles.sectionTitle}>Top Picks for User</Text>
           <ScrollView
             horizontal
@@ -173,71 +128,7 @@ const DashboardScreen = ({ userId }) => {
               </TouchableOpacity>
             ))}
           </ScrollView>
-        </View>
-
-        {/* Getting Started Section */}
-        <View style={styles.gettingStartedSection}>
-          <Text style={styles.sectionTitle}>Getting Started</Text>
-
-          <TouchableOpacity
-            style={styles.gettingStartedItem}
-            onPress={() => navigation.navigate("PullList")}
-          >
-            <View style={styles.iconCircle} />
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemTitle}>Create a Pull List</Text>
-              <Text style={styles.itemDescription}>
-                Keep track of what's coming out and when. Subscribe to a series
-                to auto-pull future issues.
-              </Text>
-            </View>
-            <Ionicons
-              style={styles.itemChevron}
-              name="chevron-forward"
-              size={20}
-              color="#FFFFFF"
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.gettingStartedItem}
-            onPress={() => navigation.navigate("Collection")}
-          >
-            <View style={[styles.iconCircle, { backgroundColor: "orange" }]} />
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemTitle}>Start Adding Your Collection</Text>
-              <Text style={styles.itemDescription}>
-                Search or view the releases for comics you own, then add them to
-                your lists in just a few taps.
-              </Text>
-            </View>
-            <Ionicons
-              style={styles.itemChevron}
-              name="chevron-forward"
-              size={20}
-              color="#FFFFFF"
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.gettingStartedItem}
-            onPress={() => navigation.navigate("CommunityAMA")}
-          >
-            <View style={[styles.iconCircle, { backgroundColor: "purple" }]} />
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemTitle}>Community</Text>
-              <Text style={styles.itemDescription}>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-              </Text>
-            </View>
-            <Ionicons
-              style={styles.itemChevron}
-              name="chevron-forward"
-              size={20}
-              color="#FFFFFF"
-            />
-          </TouchableOpacity>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   )
@@ -278,9 +169,9 @@ const styles = StyleSheet.create({
   },
 
   // Suggested Comic Overlay
-  suggestedComicOverlay: {
+  suggestedItemOverlay: {
     position: "absolute",
-    bottom: 15,
+    bottom: 30,
     width: "100%",
     paddingHorizontal: 20,
     alignItems: "center",
@@ -289,14 +180,14 @@ const styles = StyleSheet.create({
   suggestedTitle: { color: "#FFFFFF", fontSize: 25, fontWeight: "bold" },
   suggestedSubtitle: { color: "#AAAAAA", fontSize: 14 },
   actionButtons: { flexDirection: "row", alignItems: "center", marginTop: 10 },
-  pullButton: {
+  detailsButton: {
     backgroundColor: "#1E3A8A",
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 20,
     marginRight: 10,
   },
-  pullButtonText: { color: "#FFFFFF", fontWeight: "bold" },
+  detailsButtonText: { color: "#FFFFFF", fontWeight: "bold", fontSize: 15 },
   closeButton: {
     width: 30,
     height: 30,

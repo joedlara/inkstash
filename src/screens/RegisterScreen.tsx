@@ -11,12 +11,9 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import * as Google from "expo-auth-session/providers/google"
 import { FIREBASE_AUTH } from "../config/FirebaseConfig" // Make sure Firebase is configured
-import {
-  createUserWithEmailAndPassword,
-  signInWithCredential,
-  GoogleAuthProvider,
-} from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 import GoogleButton from "../components/GoogleButton"
+import { addUserToFirestore } from "../api/databaseService"
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("")
@@ -31,9 +28,19 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleSignUp = async () => {
     try {
-      await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
-      console.log("Account created successfully!")
-      // You can navigate to another screen or show a success message here
+      const userCredential = await createUserWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      )
+      const userId = userCredential.user.uid
+      const userData = {
+        username,
+        followerCount: 0,
+        subscriberCount: 0,
+        email,
+      }
+      await addUserToFirestore(userId, userData)
       navigation.replace("Dashboard")
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
@@ -64,7 +71,7 @@ const RegisterScreen = ({ navigation }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Email Address"
+          placeholder="Email"
           autoCapitalize="none"
           placeholderTextColor="#AAAAAA"
           value={email}

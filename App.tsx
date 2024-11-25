@@ -12,10 +12,13 @@ import RegisterScreen from "./src/screens/RegisterScreen"
 import DashboardScreen from "./src/screens/DashboardScreen"
 import MyCollectionsScreen from "./src/screens/MyCollectionsScreen"
 import SearchScreen from "./src/screens/SearchScreen"
-import ChatRoomScreen from "./src/screens/ChatRoomScreen"
-import NewReleasesScreen from "./src/screens/NewReleasesScreen"
-import IssueDetailsScreen from "./src/screens/IssueDetailsScreen"
+import NewReleasesScreen from "./src/screens/EventsScreen"
+import ItemDetailsScreen from "./src/screens/ItemDetailsScreen"
 import BottomNav from "./src/components/BottomNav"
+import CollectionDetailsScreen from "./src/screens/CollectionDetailsScreen"
+import LiveScreen from "./src/screens/LiveScreen"
+import SellItemScreen from "./src/screens/SellItemScreen"
+import UserSettingsScreen from "./src/screens/UserSettingsScreen"
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -38,7 +41,7 @@ const App = () => {
   if (initializing) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size={35} color="#0000ff" />
       </View>
     )
   }
@@ -58,14 +61,14 @@ const App = () => {
               options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
-              name="MyComics"
+              name="MyCollection"
               options={{ headerShown: false, animationEnabled: false }}
             >
               {() => <MyCollectionsScreen userId={user.uid} />}
             </Stack.Screen>
             <Stack.Screen
-              name="ChatRoom"
-              component={ChatRoomScreen}
+              name="Live"
+              component={LiveScreen}
               options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
@@ -74,8 +77,23 @@ const App = () => {
               options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
-              name="IssueDetails"
-              component={IssueDetailsScreen}
+              name="ItemDetails"
+              component={ItemDetailsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CollectionDetails"
+              component={CollectionDetailsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SellItem"
+              component={SellItemScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UserSettings"
+              component={UserSettingsScreen}
               options={{ headerShown: false }}
             />
           </>
