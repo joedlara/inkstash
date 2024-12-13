@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import auth from "@react-native-firebase/auth"
 import { FIREBASE_AUTH } from "../config/FirebaseConfig"
+import BackButtonTop from "../components/BackButtonTop"
 
 const UserSettingsScreen = ({ navigation }) => {
   const handleLogout = async () => {
@@ -19,10 +20,13 @@ const UserSettingsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <BackButtonTop />
       <Text style={styles.title}>Settings</Text>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log Out</Text>
-      </TouchableOpacity>
+      <View style={styles.logout}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Log Out</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -30,14 +34,18 @@ const UserSettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000", // Example for dark theme
+    paddingVertical: 60,
+  },
+  logout: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000", // Example for dark theme
   },
   title: {
     fontSize: 24,
     color: "#FFF",
-    marginBottom: 20,
+    left: 100,
   },
   logoutButton: {
     backgroundColor: "#1E3A8A", // Action button color

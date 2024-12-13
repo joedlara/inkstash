@@ -13,7 +13,7 @@ import DashboardScreen from "./src/screens/DashboardScreen"
 import MyCollectionsScreen from "./src/screens/MyCollectionsScreen"
 import SearchScreen from "./src/screens/SearchScreen"
 import NewReleasesScreen from "./src/screens/EventsScreen"
-import ItemDetailsScreen from "./src/screens/ItemDetailsScreen"
+
 import BottomNav from "./src/components/BottomNav"
 import CollectionDetailsScreen from "./src/screens/CollectionDetailsScreen"
 import LiveScreen from "./src/screens/LiveScreen"
@@ -75,11 +75,6 @@ const App = () => {
               name="Search"
               component={SearchScreen}
               options={{ headerShown: false, animationEnabled: false }}
-            />
-            <Stack.Screen
-              name="ItemDetails"
-              component={ItemDetailsScreen}
-              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="CollectionDetails"

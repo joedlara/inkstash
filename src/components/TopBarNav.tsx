@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   Image,
   TouchableOpacity,
   StatusBar,
@@ -15,7 +14,7 @@ type TopTabsBarProps = {
   activeTab: string
 }
 
-const TopBarNav: React.FC<TopTabsBarProps> = ({ onTabPress, activeTab }) => {
+const TopBarNav = () => {
   const navigation = useNavigation()
   return (
     <View style={styles.container}>
@@ -42,40 +41,6 @@ const TopBarNav: React.FC<TopTabsBarProps> = ({ onTabPress, activeTab }) => {
               <Ionicons name="person-circle" size={35} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
-        </View>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <TouchableOpacity onPress={() => onTabPress("For You")}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "For You" && styles.activeTab,
-              ]}
-            >
-              For You
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onTabPress("Featured")}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "Featured" && styles.activeTab,
-              ]}
-            >
-              Featured
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onTabPress("Pick of the Week")}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "Pick of the Week" && styles.activeTab,
-              ]}
-            >
-              Pick of the Week
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -104,36 +69,6 @@ const styles = StyleSheet.create({
   username: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold" },
   iconSection: { flexDirection: "row" },
   icon: { marginLeft: 15 },
-
-  // Tabs
-  tabsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#191919ce", // Background color for the tab section
-    paddingVertical: 10,
-    borderRadius: 10, // Rounded corners
-    marginTop: 10,
-    borderWidth: 0.5,
-    borderColor: "darkgrey",
-  },
-  tab: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 3,
-  },
-  activeTab: {
-    backgroundColor: "#0c1322", // Color for active tab
-  },
-  activeTabText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  inactiveTabText: { color: "#FFFFFF", fontSize: 14 },
-  tabText: {
-    color: "#BBB",
-    fontSize: 16,
-  },
 })
 
 export default TopBarNav

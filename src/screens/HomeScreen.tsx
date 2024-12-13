@@ -8,7 +8,7 @@ const HomeScreen = ({ navigation }) => {
       <Image source={require("../assets/icon.png")} style={styles.logo} />
 
       {/* App Name and Tagline */}
-      <Text style={styles.appName}>INK STASH</Text>
+      <Text style={styles.appName}>INKSTASH</Text>
       <Text style={styles.tagline}>
         Discover comics, manga, and collectibles
       </Text>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#001F3F", // Dark background color
+    backgroundColor: "#000000", // Dark background color
     paddingHorizontal: 20,
   },
   logo: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   loginButton: {
-    backgroundColor: "#3A4BAE", // Blue color
+    backgroundColor: "#1E3A8A", // Blue color
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 5,

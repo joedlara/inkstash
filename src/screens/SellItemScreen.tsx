@@ -207,6 +207,8 @@ const SellItemScreen = ({ navigation }) => {
         value={description}
         onChangeText={setDescription}
         multiline
+        blurOnSubmit={true}
+        returnKeyType="done"
       />
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>

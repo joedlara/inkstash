@@ -13,42 +13,53 @@ import { Ionicons } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
 import TopBarNav from "../components/TopBarNav"
 import { StatusBar } from "expo-status-bar"
+import LikeButton from "../components/LikeButton"
+import { fetchTopPicks, fetchUsername } from "../api/databaseService"
 
 const DashboardScreen = () => {
+  const [username, setUsername] = useState("User")
+  const [topPicks, setTopPicks] = useState([])
+  const [likedItems, setLikedItems] = useState({}) // Tracks liked status of items
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("For You")
   const navigation = useNavigation()
-
-  const mockData = {
-    type: "collectible",
-    title: "Rare Spider-Man Comic",
-    subtitle: "Signed by Stan Lee",
-    image:
-      "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9535719-cover2.jpg",
-    price: 1200,
-    verified: true,
-    featured: true,
-  }
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName)
   }
 
-  const handlePress = () => {
+  useEffect(() => {
+    const initializeDashboard = async () => {
+      try {
+        setUsername(await fetchUsername())
+        const picks = await fetchTopPicks()
+        setTopPicks(picks)
+      } catch (error) {
+        console.error("Error initializing dashboard:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initializeDashboard()
+  }, [])
+  const handleItemPress = () => {
     if (mockData.type === "collectible") {
-      navigation.navigate("ItemDetails", { itemId: mockData.id })
+      navigation.navigate("CollectionDetails", { itemId: mockData.id })
     } else if (mockData.type === "event") {
       navigation.navigate("EventDetailsScreen", { eventId: mockData.id })
     }
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(false)
-    }
-
-    fetchData()
-  }, [])
+  const mockData = {
+    type: "comic",
+    title: "Rare Spider-Man Comic",
+    subtitle: "Signed by Stan Lee",
+    images:
+      "https://comicvine.gamespot.com/a/uploads/original/11161/111615891/9535719-cover2.jpg",
+    price: 1200,
+    verified: true,
+    featured: true,
+  }
 
   return (
     <View style={styles.container}>
@@ -65,7 +76,7 @@ const DashboardScreen = () => {
         ) : (
           <View style={styles.featuredImageContainer}>
             <Image
-              source={{ uri: mockData.image }}
+              source={{ uri: mockData.images }}
               style={styles.featuredImage}
             />
             <LinearGradient
@@ -86,7 +97,7 @@ const DashboardScreen = () => {
               <View style={styles.actionButtons}>
                 <TouchableOpacity
                   style={styles.detailsButton}
-                  onPress={handlePress}
+                  onPress={handleItemPress}
                 >
                   <Text style={styles.detailsButtonText}>View Details</Text>
                 </TouchableOpacity>
@@ -98,21 +109,24 @@ const DashboardScreen = () => {
           </View>
         )}
         {/* Top Pick  */}
-        {/* <View style={styles.whatsNewSection}>
-          <Text style={styles.sectionTitle}>Top Picks for User</Text>
+        <View style={styles.whatsNewSection}>
+          <Text style={styles.sectionTitle}>Top Picks for: {username}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.whatsNewScroll}
           >
-            {comics.slice(1, 15).map((comic) => (
+            {topPicks.map((item) => (
               <TouchableOpacity
-                key={comic.id}
-                onPress={() => handleIssuePress(comic.id, comic.volume.id)}
+                key={item.id}
+                onPress={() => handleItemPress(item)}
               >
                 <View style={styles.whatsNewItem}>
+                  <View style={styles.likeButton}>
+                    <LikeButton itemId={item.id} item={item} />
+                  </View>
                   <Image
-                    source={{ uri: comic.image?.original_url }}
+                    source={{ uri: item?.images[0] }}
                     style={styles.whatsNewImage}
                   />
                   <LinearGradient
@@ -120,15 +134,13 @@ const DashboardScreen = () => {
                     style={styles.whatsNewbottomFade}
                   />
                   <View style={styles.whatsNewOverlay}>
-                    <Text style={styles.whatsNewTitle}>
-                      {comic.volume?.name} #{comic.issue_number}
-                    </Text>
+                    <Text style={styles.whatsNewTitle}>{item.title}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   )
@@ -168,7 +180,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
 
-  // Suggested Comic Overlay
+  // Suggested Item Overlay
   suggestedItemOverlay: {
     position: "absolute",
     bottom: 30,
@@ -237,6 +249,12 @@ const styles = StyleSheet.create({
     right: 0,
     height: "50%", // Adjust this to control how much of the bottom fades
     borderRadius: 10,
+  },
+  likeButton: {
+    position: "absolute",
+    right: 10,
+    top: 5,
+    zIndex: 2,
   },
 
   //Getting Started Section
