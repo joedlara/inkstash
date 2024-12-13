@@ -46,20 +46,7 @@ const CollectionDetailsScreen = ({ navigation }) => {
   })
 
   useEffect(() => {
-    const getItemDetails = async () => {
-      try {
-        const data = await fetchFavoritedItem(userId, itemId)
-        if (data) {
-          setItemData(data) // Populate item details
-        } else {
-          console.error("Item not found")
-        }
-      } catch (error) {
-        console.error("Error loading item details:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    const getItemDetails = async () => {}
 
     getItemDetails()
   }, [])
