@@ -12,9 +12,9 @@ import RegisterScreen from "./src/screens/RegisterScreen"
 import DashboardScreen from "./src/screens/DashboardScreen"
 import MyCollectionsScreen from "./src/screens/MyCollectionsScreen"
 import SearchScreen from "./src/screens/SearchScreen"
-import NewReleasesScreen from "./src/screens/EventsScreen"
+import EventsScreen from "./src/screens/EventsScreen"
 
-import BottomNav from "./src/components/BottomNav"
+import BottomNav from "./src/components/navigationBars/BottomNav"
 import CollectionDetailsScreen from "./src/screens/CollectionDetailsScreen"
 import LiveScreen from "./src/screens/LiveScreen"
 import SellItemScreen from "./src/screens/SellItemScreen"
@@ -27,14 +27,11 @@ const App = () => {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState(null)
 
-  // Listen to Firebase Auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user)
       if (initializing) setInitializing(false)
     })
-
-    // Unsubscribe from the listener when the component unmounts
     return unsubscribe
   }, [initializing])
 
@@ -50,14 +47,13 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         {user ? (
-          // If user is logged in, go directly to the Dashboard
           <>
             <Stack.Screen name="Dashboard" options={{ headerShown: false }}>
               {() => <DashboardScreen userId={user.uid} />}
             </Stack.Screen>
             <Stack.Screen
-              name="NewReleases"
-              component={NewReleasesScreen}
+              name="Events"
+              component={EventsScreen}
               options={{ headerShown: false, animationEnabled: false }}
             />
             <Stack.Screen
@@ -93,7 +89,6 @@ const App = () => {
             />
           </>
         ) : (
-          // Otherwise, show the login and registration screens
           <>
             <Stack.Screen
               name="Home"
@@ -114,13 +109,7 @@ const App = () => {
         )}
       </Stack.Navigator>
 
-      {user ? (
-        <>
-          <BottomNav />
-        </>
-      ) : (
-        <></>
-      )}
+      {user ? <BottomNav /> : <></>}
     </NavigationContainer>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { View, StyleSheet, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { isItemLiked, likeItem, unlikeItem } from "../api/databaseService"
+import { isItemLiked, likeItem, unlikeItem } from "../../api/databaseService"
 
 const LikeButton = ({ itemId, item }) => {
   const [isLiked, setIsLiked] = useState(false)

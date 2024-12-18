@@ -10,7 +10,7 @@ import {
 } from "react-native"
 import { getUserCollectibles } from "../api/databaseService"
 import { useNavigation } from "@react-navigation/native"
-import LikeButton from "../components/LikeButton"
+import LikeButton from "../components/buttons/LikeButton"
 
 const MyCollectionsScreen = ({ userId }) => {
   const [tab, setTab] = useState("liked") // Current tab ("liked", "bought", "onSale")

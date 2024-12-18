@@ -23,7 +23,7 @@ const TopBarNav = () => {
         <View style={styles.topBarContent}>
           <View style={styles.userSection}>
             <Image
-              source={require("../assets/icon.png")}
+              source={require("../../assets/icon.png")}
               style={styles.userIcon}
             />
           </View>

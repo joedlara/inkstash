@@ -239,3 +239,34 @@ export const fetchLiveItemDetails = async (itemId) => {
     throw error
   }
 }
+
+// Fetch LiveStreams
+export const fetchLiveStreams = async () => {
+  try {
+    const liveStreamsRef = collection(FIRESTORE_DB, "liveStreams")
+    const q = query(liveStreamsRef, orderBy("startTime", "asc"))
+    const snapshot = await getDocs(q)
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+  } catch (error) {
+    console.error("Error fetching live streams:", error)
+    throw error
+  }
+}
+
+export const createLiveStreamSession = async (streamTitle, description) => {
+  const streamKey = "your-generated-stream-key" // Dynamically retrieved
+
+  const liveStreamRef = collection(FIRESTORE_DB, "liveStreams")
+  await addDoc(liveStreamRef, {
+    title: streamTitle,
+    description,
+    startTime: new Date(),
+    rtmpURL: `rtmp://your-stream-server/app/${streamKey}`,
+  })
+
+  return streamKey
+}

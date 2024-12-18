@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import auth from "@react-native-firebase/auth"
 import { FIREBASE_AUTH } from "../config/FirebaseConfig"
-import BackButtonTop from "../components/BackButtonTop"
+import BackButtonTop from "../components/navigationBars/BackButtonTop"
 
 const UserSettingsScreen = ({ navigation }) => {
   const handleLogout = async () => {

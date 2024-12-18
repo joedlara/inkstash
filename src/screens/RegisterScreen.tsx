@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons"
 import * as Google from "expo-auth-session/providers/google"
 import { FIREBASE_AUTH } from "../config/FirebaseConfig" // Make sure Firebase is configured
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import GoogleButton from "../components/GoogleButton"
+import GoogleButton from "../components/buttons/GoogleButton"
 import { addUserToFirestore } from "../api/databaseService"
 
 const RegisterScreen = ({ navigation }) => {
