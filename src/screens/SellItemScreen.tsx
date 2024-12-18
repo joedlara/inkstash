@@ -12,8 +12,9 @@ import {
 } from "react-native"
 import { addCollectible } from "../api/databaseService"
 import * as ImagePicker from "expo-image-picker"
-import BackButtonTop from "../components/BackButtonTop"
+import BackButtonTop from "../components/navigationBars/BackButtonTop"
 import { Ionicons } from "@expo/vector-icons"
+import CategoryModal from "../components/buttons/CategoryModal"
 
 const SellItemScreen = ({ navigation }) => {
   const [images, setImages] = useState([])
@@ -24,17 +25,6 @@ const SellItemScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false)
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
   const [hasLibraryPermission, setHasLibraryPermission] = useState(false)
-
-  const categories = [
-    "Comic",
-    "Manga/Anime",
-    "Art",
-    "Collectible Cards",
-    "Video Games",
-    "Figurines",
-    "Clothing/Shoes",
-    "Other",
-  ]
 
   // Request permissions on component mount
   useEffect(() => {
@@ -213,31 +203,11 @@ const SellItemScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalHeader}>Category</Text>
-            <FlatList
-              data={categories}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.categoryItem}
-                  onPress={() => selectCategory(item)}
-                >
-                  <Text style={styles.categoryText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <CategoryModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSelect={selectCategory}
+      />
     </View>
   )
 }

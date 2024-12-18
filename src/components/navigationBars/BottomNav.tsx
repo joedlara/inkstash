@@ -40,7 +40,7 @@ const BottomNav = () => {
       {/* New Releases Tab */}
       <TouchableOpacity
         style={styles.tabContainer}
-        onPress={() => handleTabPress("NewReleases")}
+        onPress={() => handleTabPress("Events")}
       >
         <Ionicons
           name="calendar"

@@ -9,11 +9,9 @@ import {
   Animated,
 } from "react-native"
 import { useRoute } from "@react-navigation/native"
-import { Ionicons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
-import ReadMoreText from "../components/ReadMoreText"
-import { fetchFavoritedItem } from "../api/databaseService"
-import BackButtonTop from "../components/BackButtonTop"
+import ReadMoreText from "../components/buttons/ReadMoreText"
+import BackButtonTop from "../components/navigationBars/BackButtonTop"
 
 const CollectionDetailsScreen = ({ navigation }) => {
   const route = useRoute()
@@ -21,7 +19,6 @@ const CollectionDetailsScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false)
   const [activeTab, setActiveTab] = useState("Overview")
   const [itemData, setItemData] = useState([])
-  const { userId, itemId } = route.params
 
   const scrollY = useRef(new Animated.Value(0)).current
 
@@ -53,143 +50,91 @@ const CollectionDetailsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <>
-        {loading ? (
-          <View>
-            <Text>Loading in Item</Text>
+      <BackButtonTop />
+      <Animated.ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        {/* Section 1: Hero Image/Details Container */}
+        <Animated.View
+          style={[
+            styles.heroContainer,
+            {
+              opacity: heroOpacity,
+              transform: [{ translateY: heroTranslateY }],
+            },
+          ]}
+        >
+          <Image source={{ uri: "fadsfafa" }} style={styles.heroImage} />
+          <LinearGradient
+            colors={["rgb(0, 0, 0)", "transparent"]}
+            style={styles.topFade}
+          />
+          <View style={styles.detailsContainer}>
+            <Text style={styles.title}>Title</Text>
+
+            <Text style={styles.subtitle}>
+              SOLD • $
+              {/* {moment(itemData?.timestamp).format("MMM DD, YYYY")} */}
+            </Text>
           </View>
-        ) : (
-          <>
-            <BackButtonTop />
-            <Animated.ScrollView
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                { useNativeDriver: false }
-              )}
-              scrollEventThrottle={16}
+        </Animated.View>
+
+        {/* Section 3: Tabs */}
+        <View style={styles.tabsContainer}>
+          {["Overview", "My Details", "Reviews"].map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={styles.tabItem}
+              onPress={() => setActiveTab(tab)}
             >
-              {/* Section 1: Hero Image/Details Container */}
-              <Animated.View
+              <Text
                 style={[
-                  styles.heroContainer,
-                  {
-                    opacity: heroOpacity,
-                    transform: [{ translateY: heroTranslateY }],
-                  },
+                  styles.tabText,
+                  activeTab === tab && styles.activeTabText,
                 ]}
               >
-                <Image
-                  source={{ uri: itemData?.imageUrl }}
-                  style={styles.heroImage}
-                />
-                <LinearGradient
-                  colors={["rgb(0, 0, 0)", "transparent"]}
-                  style={styles.topFade}
-                />
-                <View style={styles.detailsContainer}>
-                  <Text style={styles.title}>{itemData?.name}</Text>
+                {tab}
+              </Text>
+              {activeTab === tab && <View style={styles.underline} />}
+            </TouchableOpacity>
+          ))}
+        </View>
+        {/* Section 4: Description and Small Cover Image */}
+        <View style={styles.descriptionContainer}>
+          <View style={styles.descriptionRow}>
+            {/* Description Text */}
+            <Text style={styles.description}>
+              <ReadMoreText text={itemData?.description} limit={20} />
+            </Text>
+            {/* Smaller Cover Image */}
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image
+                source={{ uri: itemData?.imageUrl }}
+                style={styles.smallCover}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-                  <Text style={styles.subtitle}>
-                    SOLD •{" $"}
-                    {/* {moment(itemData?.timestamp).format("MMM DD, YYYY")} */}
-                    {itemData.price}
-                  </Text>
-                </View>
-              </Animated.View>
-
-              {/* Section 3: Tabs */}
-              <View style={styles.tabsContainer}>
-                {["Overview", "My Details", "Reviews"].map((tab) => (
-                  <TouchableOpacity
-                    key={tab}
-                    style={styles.tabItem}
-                    onPress={() => setActiveTab(tab)}
-                  >
-                    <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === tab && styles.activeTabText,
-                      ]}
-                    >
-                      {tab}
-                    </Text>
-                    {activeTab === tab && <View style={styles.underline} />}
-                  </TouchableOpacity>
-                ))}
-              </View>
-              {/* Section 4: Description and Small Cover Image */}
-              <View style={styles.descriptionContainer}>
-                <View style={styles.descriptionRow}>
-                  {/* Description Text */}
-                  <Text style={styles.description}>
-                    <ReadMoreText text={itemData?.description} limit={20} />
-                  </Text>
-                  {/* Smaller Cover Image */}
-                  <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Image
-                      source={{ uri: itemData?.imageUrl }}
-                      style={styles.smallCover}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Section 5: Full-Page Image Modal */}
-              <Modal
-                visible={isModalVisible}
-                transparent={true}
-                animationType="fade"
-              >
-                <TouchableOpacity
-                  style={styles.modalContainer}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Image
-                    source={{ uri: itemData?.imageUrl }}
-                    style={styles.fullCover}
-                  />
-                </TouchableOpacity>
-              </Modal>
-            </Animated.ScrollView>
-
-            {/* Section 2: Icon row */}
-            <Animated.View
-              style={[styles.stickyHeader, { opacity: stickyHeaderOpacity }]}
-            >
-              <View style={styles.iconRow}>
-                <Text
-                  style={styles.stickyTitle}
-                  numberOfLines={1} // Truncate the title to one line with ellipsis
-                  ellipsizeMode="tail"
-                >
-                  {itemData?.name}
-                </Text>
-              </View>
-              <View style={styles.tabsContainer}>
-                {["Overview", "My Details", "Reviews"].map((tab) => (
-                  <TouchableOpacity
-                    key={tab}
-                    style={styles.tabItem}
-                    onPress={() => setActiveTab(tab)}
-                  >
-                    <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === tab && styles.activeTabText,
-                      ]}
-                    >
-                      {tab}
-                    </Text>
-                    {activeTab === tab && <View style={styles.underline} />}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </Animated.View>
-          </>
-        )}
-      </>
+        {/* Section 5: Full-Page Image Modal */}
+        <Modal visible={isModalVisible} transparent={true} animationType="fade">
+          <TouchableOpacity
+            style={styles.modalContainer}
+            onPress={() => setModalVisible(false)}
+          >
+            <Image
+              source={{ uri: itemData?.imageUrl }}
+              style={styles.fullCover}
+            />
+          </TouchableOpacity>
+        </Modal>
+      </Animated.ScrollView>
     </View>
   )
 }

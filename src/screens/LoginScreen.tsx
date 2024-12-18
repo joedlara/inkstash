@@ -15,7 +15,7 @@ import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
 } from "firebase/auth"
-import GoogleButton from "../components/GoogleButton"
+import GoogleButton from "../components/buttons/GoogleButton"
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("")
